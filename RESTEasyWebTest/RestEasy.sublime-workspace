@@ -1,0 +1,351 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"Prox",
+				"ProxyCF"
+			],
+			[
+				"OVER",
+				"OVERWRITE"
+			],
+			[
+				"CO",
+				"COLUMNS"
+			],
+			[
+				"parti",
+				"PARTITIONED"
+			],
+			[
+				"ajax",
+				"ajax	$.ajax()"
+			],
+			[
+				"t",
+				"type"
+			],
+			[
+				"scr",
+				"script	Tag"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"contents": "\n\n\n\n\n\n",
+			"settings":
+			{
+				"buffer_size": 6,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "",
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Windows"
+			}
+		},
+		{
+			"contents": "#================================\nfrom java.io import FileInputStream\nimport sys\n \n \n#==========================================================================\n# Load properties and connect to Weblogic server\n#==========================================================================\nwl_domain_url=\"localhost:7031\"\nadminUrl = \"t3://\"+wl_domain_url\nimportUser = \"weblogic\"\nimportPassword = \"ccscd123\"\ndomain_home=\"C:/Oracle/Middleware/Oracle_Home/user_projects/domains/dominio_proxy/\"\nspg_url=\"jnp://mococa.ctech.local:1099\"\n\n \n#===============================\n# Start the script\n#===============================\n \nconnect(importUser, importPassword, adminUrl)\nedit()\nstartEdit()\n \n#================================\n# Building JMS Filestores\n#================================\n \ncd('/')\ncmo.createFileStore('ProxyFileStore')\ncd('/FileStores/ProxyFileStore')\ncmo.setDirectory(domain_home+'filestores')\nset('Targets', jarray.array([ObjectName('com.bea:Name=ProxyServer,Type=Server')], ObjectName))\n\n \n#================================\n# Building JMS Server(s)\n#================================\n \ncd('/')\ncmo.createJMSServer('ProxyJMSSever')\ncd('/Deployments/ProxyJMSSever')\ncmo.setPersistentStore(getMBean('/FileStores/ProxyFileStore'))\nset('Targets', jarray.array([ObjectName('com.bea:Name=ProxyServer,Type=Server')], ObjectName))\n \ncmo.setMaximumMessageSize(10000000)\ncd('/Deployments/ProxyJMSSever/JMSMessageLogFile/ProxyJMSSever')\ncmo.setRotationType('byTime')\ncmo.setRotateLogOnStartup(false)\ncmo.setRotationTime('00:00')\ncmo.setFileTimeSpan(24)\ncmo.setFileCount(30)\ncmo.setNumberOfFilesLimited(true)\ncmo.setFileName(domain_home+'/servers/ProxyServer/logs/jmsServers/ProxyJMSSever_messages.log')\n  \n#================================\n# Building JMS Module\n# target preferrable cluster, single-server DEV domain use server\n#================================\n \ncd('/')\ncmo.createJMSSystemResource('ProxyJMSModule')\ncd('/SystemResources/ProxyJMSModule')\nset('Targets',jarray.array([ObjectName('com.bea:Name=ProxyServer,Type=Server')], ObjectName))\n \n#================================\n# Building JMS Connection Factory\n#================================\n \ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule')\ncmo.createConnectionFactory('ProxyCF')\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/ConnectionFactories/ProxyCF')\ncmo.setJNDIName('ProxyCF')\ncmo.setDefaultTargetingEnabled(true)\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/ConnectionFactories/ProxyCF/SecurityParams/ProxyCF')\ncmo.setAttachJMSXUserId(false)\n \n \n \n \n#================================================================\n# Building Connector JMS Subdeployment\n#================================================================\n \ncd('/SystemResources/ProxyJMSModule')\ncmo.createSubDeployment('ConnectorSubdeployment')\n#cd('/SystemResources/ProxyJMSModule/SubDeployments/ConnectorSubdeployment')\n#set('Targets',jarray.array([ObjectName('com.bea:Name=ProxyServer,Type=Server')], ObjectName))\n\n\n#================================================================\n# Building PortAnum JMS Subdeployment\n#================================================================\n \ncd('/SystemResources/ProxyJMSModule')\ncmo.createSubDeployment('PortanumSubdeployment')\n#cd('/SystemResources/ProxyJMSModule/SubDeployments/PortanumSubdeployment')\n#set('Targets',jarray.array([ObjectName('com.bea:Name=ProxyServer,Type=Server')], ObjectName))\n\n\n#================================================================\n# Building Portnum JMS SPGSubdeployment\n#================================================================\n \ncd('/SystemResources/ProxyJMSModule')\ncmo.createSubDeployment('SPGSubdeployment')\n#cd('/SystemResources/ProxyJMSModule/SubDeployments/SPGSubdeployment')\n#set('Targets',jarray.array([ObjectName('com.bea:Name=ProxyServer,Type=Server')], ObjectName))\n \n \n#================================================================\n# Building Connector Queues\n#================================================================\n \n# -- IN\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule')\n#cmo.createQueue('qa1_soa_connector_in')\n#cmo.createQueue('qa2_soa_connector_in')\n#cmo.createQueue('qa3_soa_connector_in')\n#cmo.createQueue('qa6_soa_connector_in')\n#cmo.createQueue('qa3_bdo_connector_in')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa1_soa_connector_in')\n#cmo.setJNDIName('queue/qa1_soa_connector_in')\n#cmo.setSubDeploymentName('ConnectorSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa2_soa_connector_in')\n#cmo.setJNDIName('queue/qa2_soa_connector_in')\n#cmo.setSubDeploymentName('ConnectorSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa3_soa_connector_in')\n#cmo.setJNDIName('queue/qa3_soa_connector_in')\n#cmo.setSubDeploymentName('ConnectorSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa6_soa_connector_in')\n#cmo.setJNDIName('queue/qa6_soa_connector_in')\n#cmo.setSubDeploymentName('ConnectorSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa3_bdo_connector_in')\n#cmo.setJNDIName('queue/qa3_bdo_connector_in')\n#cmo.setSubDeploymentName('ConnectorSubdeployment')\n\n\n# -- OUT\n \n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule')\n#cmo.createQueue('qa1_soa_connector_out')\n#cmo.createQueue('qa2_soa_connector_out')\n#cmo.createQueue('qa3_soa_connector_out')\n#cmo.createQueue('qa6_soa_connector_out')\n#cmo.createQueue('qa3_bdo_connector_out')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa1_soa_connector_out')\n#cmo.setJNDIName('queue/qa1_soa_connector_out')\n#cmo.setSubDeploymentName('ConnectorSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa2_soa_connector_out')\n#cmo.setJNDIName('queue/qa2_soa_connector_out')\n#cmo.setSubDeploymentName('ConnectorSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa3_soa_connector_out')\n#cmo.setJNDIName('queue/qa3_soa_connector_out')\n#cmo.setSubDeploymentName('ConnectorSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa6_soa_connector_out')\n#cmo.setJNDIName('queue/qa6_soa_connector_out')\n#cmo.setSubDeploymentName('ConnectorSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa3_bdo_connector_out')\n#cmo.setJNDIName('queue/qa3_bdo_connector_out')\n#cmo.setSubDeploymentName('ConnectorSubdeployment')\n \n \n#================================================================\n# Building Portnum Queues\n#================================================================\n \n# -- IN\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule')\n#cmo.createQueue('qa1_soa_portanum_in')\n#cmo.createQueue('qa2_soa_portanum_in')\n#cmo.createQueue('qa3_soa_portanum_in')\n#cmo.createQueue('qa6_soa_portanum_in')\n#cmo.createQueue('qa3_bdo_portanum_in')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa1_soa_portanum_in')\n#cmo.setJNDIName('queue/qa1_soa_portanum_in')\n#cmo.setSubDeploymentName('PortanumSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa2_soa_portanum_in')\n#cmo.setJNDIName('queue/qa2_soa_portanum_in')\n#cmo.setSubDeploymentName('PortanumSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa3_soa_portanum_in')\n#cmo.setJNDIName('queue/qa3_soa_portanum_in')\n#cmo.setSubDeploymentName('PortanumSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa6_soa_portanum_in')\n#cmo.setJNDIName('queue/qa6_soa_portanum_in')\n#cmo.setSubDeploymentName('PortanumSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa3_bdo_portanum_in')\n#cmo.setJNDIName('queue/qa3_bdo_portanum_in')\n#cmo.setSubDeploymentName('PortanumSubdeployment')\n# -- OUT\n \n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule')\n#cmo.createQueue('qa1_soa_portanum_out')\n#cmo.createQueue('qa2_soa_portanum_out')\n#cmo.createQueue('qa3_soa_portanum_out')\n#cmo.createQueue('qa6_soa_portanum_out')\n#cmo.createQueue('qa3_bdo_portanum_out')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa1_soa_portanum_out')\n#cmo.setJNDIName('queue/qa1_soa_portanum_out')\n#cmo.setSubDeploymentName('PortanumSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa2_soa_portanum_out')\n#cmo.setJNDIName('queue/qa2_soa_portanum_out')\n#cmo.setSubDeploymentName('PortanumSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa3_soa_portanum_out')\n#cmo.setJNDIName('queue/qa3_soa_portanum_out')\n#cmo.setSubDeploymentName('PortanumSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa6_soa_portanum_out')\n#cmo.setJNDIName('queue/qa6_soa_portanum_out')\n#cmo.setSubDeploymentName('PortanumSubdeployment')\n\n#cd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/qa3_bdo_portanum_out')\n#cmo.setJNDIName('queue/qa3_bdo_portanum_out')\n#cmo.setSubDeploymentName('PortanumSubdeployment')\n\n#================================================================\n# Building Proxy-out Portanum Queues\n#================================================================\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule')\ncmo.createQueue('BDO_TO_SPG_PORTANUM_QA1')\ncmo.createQueue('SOA_TO_SPG_PORTANUM_QA1')\ncmo.createQueue('BDO_TO_SPG_PORTANUM_QA2')\ncmo.createQueue('SOA_TO_SPG_PORTANUM_QA2')\ncmo.createQueue('BDO_TO_SPG_PORTANUM_QA3')\ncmo.createQueue('SOA_TO_SPG_PORTANUM_QA3')\ncmo.createQueue('BDO_TO_SPG_PORTANUM_QA4')\ncmo.createQueue('SOA_TO_SPG_PORTANUM_QA4')\ncmo.createQueue('BDO_TO_SPG_PORTANUM_QA5')\ncmo.createQueue('SOA_TO_SPG_PORTANUM_QA5')\ncmo.createQueue('BDO_TO_SPG_PORTANUM_PRD')\ncmo.createQueue('SOA_TO_SPG_PORTANUM_PRD')\ncmo.createQueue('SPG_TO_BDO_PORTANUM_QA1')\ncmo.createQueue('SPG_TO_BDO_CONNECTOR_QA1')\ncmo.createQueue('SPG_TO_SOA_PORTANUM_QA1')\ncmo.createQueue('SPG_TO_SOA_CONNECTOR_QA1')\ncmo.createQueue('SPG_TO_BDO_PORTANUM_QA2')\ncmo.createQueue('SPG_TO_BDO_CONNECTOR_QA2')\ncmo.createQueue('SPG_TO_SOA_PORTANUM_QA2')\ncmo.createQueue('SPG_TO_SOA_CONNECTOR_QA2')\ncmo.createQueue('SPG_TO_BDO_PORTANUM_QA3')\ncmo.createQueue('SPG_TO_BDO_CONNECTOR_QA3')\ncmo.createQueue('SPG_TO_SOA_PORTANUM_QA3')\ncmo.createQueue('SPG_TO_SOA_CONNECTOR_QA3')\ncmo.createQueue('SPG_TO_BDO_PORTANUM_QA4')\ncmo.createQueue('SPG_TO_BDO_CONNECTOR_QA4')\ncmo.createQueue('SPG_TO_SOA_PORTANUM_QA4')\ncmo.createQueue('SPG_TO_SOA_CONNECTOR_QA4')\ncmo.createQueue('SPG_TO_BDO_PORTANUM_QA5')\ncmo.createQueue('SPG_TO_BDO_CONNECTOR_QA5')\ncmo.createQueue('SPG_TO_SOA_PORTANUM_QA5')\ncmo.createQueue('SPG_TO_SOA_CONNECTOR_QA5')\ncmo.createQueue('SPG_TO_BDO_PORTANUM_PRD')\ncmo.createQueue('SPG_TO_BDO_CONNECTOR_PRD')\ncmo.createQueue('SPG_TO_SOA_PORTANUM_PRD')\ncmo.createQueue('SPG_TO_SOA_CONNECTOR_PRD')\n\n\n\n\n\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_QA1')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_QA1')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_QA1')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_QA1')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_QA1')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_QA1')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_QA1')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_QA1')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_QA1')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_QA1')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_QA1')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_QA1')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_QA1')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_QA1')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_QA1')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_QA1')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_QA2')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_QA2')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_QA2')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_QA2')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_QA2')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_QA2')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_QA2')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_QA2')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_QA2')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_QA2')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_QA2')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_QA2')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_QA2')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_QA2')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_QA2')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_QA2')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_QA3')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_QA3')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_QA3')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_QA3')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_QA3')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_QA3')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_QA3')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_QA3')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_QA3')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_QA3')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_QA3')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_QA3')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_QA3')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_QA3')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_QA3')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_QA3')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_QA4')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_QA4')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_QA4')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_QA4')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_QA4')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_QA4')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_QA4')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_QA4')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_QA4')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_QA4')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_QA4')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_QA4')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_QA4')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_QA4')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_QA4')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_QA4')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_QA5')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_QA5')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_QA5')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_QA5')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_QA5')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_QA5')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_QA5')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_QA5')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_QA5')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_QA5')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_QA5')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_QA5')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_QA5')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_QA5')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_QA5')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_QA5')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_PRD')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_PRD')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_PORTANUM_PRD')\ncmo.setJNDIName('SPG_TO_BDO_PORTANUM_PRD')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_PRD')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_PRD')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_BDO_CONNECTOR_PRD')\ncmo.setJNDIName('SPG_TO_BDO_CONNECTOR_PRD')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_PRD')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_PRD')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_PORTANUM_PRD')\ncmo.setJNDIName('SPG_TO_SOA_PORTANUM_PRD')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_PRD')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_PRD')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SPG_TO_SOA_CONNECTOR_PRD')\ncmo.setJNDIName('SPG_TO_SOA_CONNECTOR_PRD')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_PORTANUM_QA1')\ncmo.setJNDIName('BDO_TO_SPG_PORTANUM_QA1')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_PORTANUM_QA1')\ncmo.setJNDIName('SOA_TO_SPG_PORTANUM_QA1')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_PORTANUM_QA2')\ncmo.setJNDIName('BDO_TO_SPG_PORTANUM_QA2')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_PORTANUM_QA2')\ncmo.setJNDIName('SOA_TO_SPG_PORTANUM_QA2')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_PORTANUM_QA3')\ncmo.setJNDIName('BDO_TO_SPG_PORTANUM_QA3')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_PORTANUM_QA3')\ncmo.setJNDIName('SOA_TO_SPG_PORTANUM_QA3')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_PORTANUM_QA4')\ncmo.setJNDIName('BDO_TO_SPG_PORTANUM_QA4')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_PORTANUM_QA4')\ncmo.setJNDIName('SOA_TO_SPG_PORTANUM_QA4')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_PORTANUM_QA5')\ncmo.setJNDIName('BDO_TO_SPG_PORTANUM_QA5')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_PORTANUM_QA5')\ncmo.setJNDIName('SOA_TO_SPG_PORTANUM_QA5')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_PORTANUM_PRD')\ncmo.setJNDIName('BDO_TO_SPG_PORTANUM_PRD')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_PORTANUM_PRD')\ncmo.setJNDIName('SOA_TO_SPG_PORTANUM_PRD')\ncmo.setSubDeploymentName('PortanumSubdeployment')\n\n\n\n\n#================================================================\n# Building Proxy-out Connector Queues\n#================================================================\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule')\ncmo.createQueue('BDO_TO_SPG_CONNECTOR_QA1')\ncmo.createQueue('SOA_TO_SPG_CONNECTOR_QA1')\ncmo.createQueue('BDO_TO_SPG_CONNECTOR_QA2')\ncmo.createQueue('SOA_TO_SPG_CONNECTOR_QA2')\ncmo.createQueue('BDO_TO_SPG_CONNECTOR_QA3')\ncmo.createQueue('SOA_TO_SPG_CONNECTOR_QA3')\ncmo.createQueue('BDO_TO_SPG_CONNECTOR_QA4')\ncmo.createQueue('SOA_TO_SPG_CONNECTOR_QA4')\ncmo.createQueue('BDO_TO_SPG_CONNECTOR_QA5')\ncmo.createQueue('SOA_TO_SPG_CONNECTOR_QA5')\ncmo.createQueue('BDO_TO_SPG_CONNECTOR_PRD')\ncmo.createQueue('SOA_TO_SPG_CONNECTOR_PRD')\n\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_CONNECTOR_QA1')\ncmo.setJNDIName('BDO_TO_SPG_CONNECTOR_QA1')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_CONNECTOR_QA1')\ncmo.setJNDIName('SOA_TO_SPG_CONNECTOR_QA1')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_CONNECTOR_QA2')\ncmo.setJNDIName('BDO_TO_SPG_CONNECTOR_QA2')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_CONNECTOR_QA2')\ncmo.setJNDIName('SOA_TO_SPG_CONNECTOR_QA2')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_CONNECTOR_QA3')\ncmo.setJNDIName('BDO_TO_SPG_CONNECTOR_QA3')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_CONNECTOR_QA3')\ncmo.setJNDIName('SOA_TO_SPG_CONNECTOR_QA3')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_CONNECTOR_QA4')\ncmo.setJNDIName('BDO_TO_SPG_CONNECTOR_QA4')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_CONNECTOR_QA4')\ncmo.setJNDIName('SOA_TO_SPG_CONNECTOR_QA4')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_CONNECTOR_QA5')\ncmo.setJNDIName('BDO_TO_SPG_CONNECTOR_QA5')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_CONNECTOR_QA5')\ncmo.setJNDIName('SOA_TO_SPG_CONNECTOR_QA5')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/BDO_TO_SPG_CONNECTOR_PRD')\ncmo.setJNDIName('BDO_TO_SPG_CONNECTOR_PRD')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/SOA_TO_SPG_CONNECTOR_PRD')\ncmo.setJNDIName('SOA_TO_SPG_CONNECTOR_PRD')\ncmo.setSubDeploymentName('ConnectorSubdeployment')\n\n\n \n#================================================================\n# Building SPG Queues\n#================================================================\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule')\ncmo.createQueue('bdo_to_spg')\ncmo.createQueue('spg_to_bdo')\ncmo.createQueue('spg_to_soa')\ncmo.createQueue('soa_to_spg')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/bdo_to_spg')\ncmo.setJNDIName('bdo_to_spg')\ncmo.setSubDeploymentName('SPGSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/spg_to_bdo')\ncmo.setJNDIName('spg_to_bdo')\ncmo.setSubDeploymentName('SPGSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/spg_to_soa')\ncmo.setJNDIName('spg_to_soa')\ncmo.setSubDeploymentName('SPGSubdeployment')\n\ncd('/JMSSystemResources/ProxyJMSModule/JMSResource/ProxyJMSModule/Queues/soa_to_spg')\ncmo.setJNDIName('soa_to_spg')\ncmo.setSubDeploymentName('SPGSubdeployment')\n\n\n \n#================================================================\n# Building Foreign Server (JBOSS)\n#================================================================\n\n\ncd('/')\ncmo.createJMSSystemResource('JBOSSForeginJMSResource')\n\ncd('/SystemResources/JBOSSForeginJMSResource')\nset('Targets',jarray.array([ObjectName('com.bea:Name=ProxyServer,Type=Server')], ObjectName))\n\ncd('/JMSSystemResources/JBOSSForeginJMSResource/JMSResource/JBOSSForeginJMSResource')\ncmo.createForeignServer('JBOSSForeginJMSServer')\n\ncd('/JMSSystemResources/JBOSSForeginJMSResource/JMSResource/JBOSSForeginJMSResource/ForeignServers/JBOSSForeginJMSServer')\ncmo.setDefaultTargetingEnabled(true)\n\ncmo.setJNDIPropertiesCredential('senha')\ncmo.setConnectionURL(spg_url)\ncmo.setInitialContextFactory('org.jnp.interfaces.NamingContextFactory')\ncmo.createJNDIProperty('java.naming.security.principal')\n\ncd('/JMSSystemResources/JBOSSForeginJMSResource/JMSResource/JBOSSForeginJMSResource/ForeignServers/JBOSSForeginJMSServer/JNDIProperties/java.naming.security.principal')\ncmo.setValue('jms')\n\ncd('/JMSSystemResources/JBOSSForeginJMSResource/JMSResource/JBOSSForeginJMSResource/ForeignServers/JBOSSForeginJMSServer')\n\ncmo.createForeignConnectionFactory('JbossJMSConnectionFactory')\n\ncd('/JMSSystemResources/JBOSSForeginJMSResource/JMSResource/JBOSSForeginJMSResource/ForeignServers/JBOSSForeginJMSServer/ForeignConnectionFactories/JbossJMSConnectionFactory')\ncmo.setLocalJNDIName('jms/JbossCF')\ncmo.setRemoteJNDIName('jms/JbossCF')\n\ncd('/JMSSystemResources/JBOSSForeginJMSResource/JMSResource/JBOSSForeginJMSResource/ForeignServers/JBOSSForeginJMSServer')\ncmo.createForeignDestination('ForeignJMSDestination')\n\ncd('/JMSSystemResources/JBOSSForeginJMSResource/JMSResource/JBOSSForeginJMSResource/ForeignServers/JBOSSForeginJMSServer/ForeignDestinations/ForeignJMSDestination')\ncmo.setLocalJNDIName('queue/0125_bdo_to_spg')\ncmo.setRemoteJNDIName('queue/0125_bdo_to_spg')\n\n\n\n\n \n#================================================================\n# Building Bridges\n#================================================================\n\n#>--------->  Creating bdo_to_spg_bridge\n\ncd('/')\ncmo.createJMSBridgeDestination('bdo_to_spg_source_bridge')\ncd('/JMSBridgeDestinations/bdo_to_spg_source_bridge')\ncmo.setConnectionURL(wl_domain_url)\ncmo.setAdapterJNDIName('eis.jms.WLSConnectionFactoryJNDINoTX')\ncmo.setConnectionFactoryJNDIName('ProxyCF')\ncmo.setDestinationJNDIName('bdo_to_spg')\ncmo.setClasspath('')\ncmo.setInitialContextFactory('weblogic.jndi.WLInitialContextFactory')\ncmo.setDestinationType('Queue')\n\n# TARGET DESTINATION\ncd('/')\ncmo.createJMSBridgeDestination('bdo_to_spg_target_bridge')\ncd('/JMSBridgeDestinations/bdo_to_spg_target_bridge')\ncmo.setConnectionURL(spg_url)\ncmo.setAdapterJNDIName('ConnectionFactory')\ncmo.setConnectionFactoryJNDIName('JbossCF')\ncmo.setDestinationJNDIName('queue/0125_bdo_to_spg')\ncmo.setClasspath('')\ncmo.setInitialContextFactory('org.jnp.interfaces.NamingContextFactory')\ncmo.setDestinationType('Queue')\n\n# CREATE MESSAGING BRIDGE\ncd('/')\ncmo.createMessagingBridge('bdo_to_spg_bridge')\ncd('/Deployments/bdo_to_spg_bridge')\nset('Targets',jarray.array([ObjectName('com.bea:Name=ProxyServer,Type=Server')], ObjectName))\ncmo.setSourceDestination(getMBean('/JMSBridgeDestinations/bdo_to_spg_source_bridge'))\ncmo.setTargetDestination(getMBean('/JMSBridgeDestinations/bdo_to_spg_target_bridge'))\ncmo.setStarted(true)\ncmo.setSelector('')\ncmo.setQualityOfService('Exactly-once')\n\n \n#>--------->  Creating spg_to_bdo_bridge\n\ncd('/')\ncmo.createJMSBridgeDestination('spg_to_bdo_source_bridge')\ncd('/JMSBridgeDestinations/spg_to_bdo_source_bridge')\ncmo.setConnectionURL(wl_domain_url)\ncmo.setAdapterJNDIName('eis.jms.WLSConnectionFactoryJNDINoTX')\ncmo.setConnectionFactoryJNDIName('ProxyCF')\ncmo.setDestinationJNDIName('spg_to_bdo')\ncmo.setClasspath('')\ncmo.setInitialContextFactory('weblogic.jndi.WLInitialContextFactory')\ncmo.setDestinationType('Queue')\n\n# TARGET DESTINATION\ncd('/')\ncmo.createJMSBridgeDestination('spg_to_bdo_target_bridge')\ncd('/JMSBridgeDestinations/spg_to_bdo_target_bridge')\ncmo.setConnectionURL(spg_url)\ncmo.setAdapterJNDIName('ConnectionFactory')\ncmo.setConnectionFactoryJNDIName('JbossCF')\ncmo.setDestinationJNDIName('queue/0125_spg_to_bdo')\ncmo.setClasspath('')\ncmo.setInitialContextFactory('org.jnp.interfaces.NamingContextFactory')\ncmo.setDestinationType('Queue')\n\n# CREATE MESSAGING BRIDGE\ncd('/')\ncmo.createMessagingBridge('spg_to_bdo_bridge')\ncd('/Deployments/spg_to_bdo_bridge')\nset('Targets',jarray.array([ObjectName('com.bea:Name=ProxyServer,Type=Server')], ObjectName))\ncmo.setSourceDestination(getMBean('/JMSBridgeDestinations/spg_to_bdo_source_bridge'))\ncmo.setTargetDestination(getMBean('/JMSBridgeDestinations/spg_to_bdo_target_bridge'))\ncmo.setStarted(true)\ncmo.setSelector('')\ncmo.setQualityOfService('Exactly-once')\n \n \n \n \n\n\n#>--------->  Creating spg_to_soa_bridge\n\ncd('/')\ncmo.createJMSBridgeDestination('spg_to_soa_source_bridge')\ncd('/JMSBridgeDestinations/spg_to_soa_source_bridge')\ncmo.setConnectionURL(wl_domain_url)\ncmo.setAdapterJNDIName('eis.jms.WLSConnectionFactoryJNDINoTX')\ncmo.setConnectionFactoryJNDIName('ProxyCF')\ncmo.setDestinationJNDIName('spg_to_soa')\ncmo.setClasspath('')\ncmo.setInitialContextFactory('weblogic.jndi.WLInitialContextFactory')\ncmo.setDestinationType('Queue')\n\n# TARGET DESTINATION\ncd('/')\ncmo.createJMSBridgeDestination('spg_to_soa_target_bridge')\ncd('/JMSBridgeDestinations/spg_to_soa_target_bridge')\ncmo.setConnectionURL(spg_url)\ncmo.setAdapterJNDIName('ConnectionFactory')\ncmo.setConnectionFactoryJNDIName('JbossCF')\ncmo.setDestinationJNDIName('queue/0125_spg_to_soa')\ncmo.setClasspath('')\ncmo.setInitialContextFactory('org.jnp.interfaces.NamingContextFactory')\ncmo.setDestinationType('Queue')\n\n# CREATE MESSAGING BRIDGE\ncd('/')\ncmo.createMessagingBridge('spg_to_soa_bridge')\ncd('/Deployments/spg_to_soa_bridge')\nset('Targets',jarray.array([ObjectName('com.bea:Name=ProxyServer,Type=Server')], ObjectName))\ncmo.setSourceDestination(getMBean('/JMSBridgeDestinations/spg_to_soa_source_bridge'))\ncmo.setTargetDestination(getMBean('/JMSBridgeDestinations/spg_to_soa_target_bridge'))\ncmo.setStarted(true)\ncmo.setSelector('')\ncmo.setQualityOfService('Exactly-once')\n\n\n\n\n\n\n#>--------->  Creating soa_to_spg_bridge\n\ncd('/')\ncmo.createJMSBridgeDestination('soa_to_spg_source_bridge')\ncd('/JMSBridgeDestinations/soa_to_spg_source_bridge')\ncmo.setConnectionURL(wl_domain_url)\ncmo.setAdapterJNDIName('eis.jms.WLSConnectionFactoryJNDINoTX')\ncmo.setConnectionFactoryJNDIName('ProxyCF')\ncmo.setDestinationJNDIName('soa_to_spg')\ncmo.setClasspath('')\ncmo.setInitialContextFactory('weblogic.jndi.WLInitialContextFactory')\ncmo.setDestinationType('Queue')\n\n# TARGET DESTINATION\ncd('/')\ncmo.createJMSBridgeDestination('soa_to_spg_target_bridge')\ncd('/JMSBridgeDestinations/soa_to_spg_target_bridge')\ncmo.setConnectionURL(spg_url)\ncmo.setAdapterJNDIName('ConnectionFactory')\ncmo.setConnectionFactoryJNDIName('JbossCF')\ncmo.setDestinationJNDIName('queue/0125_soa_to_spg')\ncmo.setClasspath('')\ncmo.setInitialContextFactory('org.jnp.interfaces.NamingContextFactory')\ncmo.setDestinationType('Queue')\n\n# CREATE MESSAGING BRIDGE\ncd('/')\ncmo.createMessagingBridge('soa_to_spg_bridge')\ncd('/Deployments/soa_to_spg_bridge')\nset('Targets',jarray.array([ObjectName('com.bea:Name=ProxyServer,Type=Server')], ObjectName))\ncmo.setSourceDestination(getMBean('/JMSBridgeDestinations/soa_to_spg_source_bridge'))\ncmo.setTargetDestination(getMBean('/JMSBridgeDestinations/soa_to_spg_target_bridge'))\ncmo.setStarted(true)\ncmo.setSelector('')\ncmo.setQualityOfService('Exactly-once')\n\n \n \n#==========================================================================\n# Finalize\n#==========================================================================\n \nsave()\nactivate()\ndisconnect()\n \n#================================\n# End\n#================================",
+			"file": "/C/Users/fsoster/Desktop/GVT/Dominio_proxy/create_infra.jy",
+			"file_size": 35630,
+			"file_write_time": 130764466170423936,
+			"settings":
+			{
+				"buffer_size": 34749,
+				"line_ending": "Windows",
+				"name": "Package Control Messages",
+				"scratch": true
+			}
+		}
+	],
+	"build_system": "",
+	"command_palette":
+	{
+		"height": 81.0,
+		"selected_items":
+		[
+			[
+				"wlst",
+				"Set Syntax: WLST"
+			],
+			[
+				"install",
+				"Package Control: Install Package"
+			],
+			[
+				"r",
+				"Set Syntax: R"
+			],
+			[
+				"repl",
+				"Set Syntax: Io Repl"
+			],
+			[
+				"instal",
+				"Package Control: Install Package"
+			],
+			[
+				"githu",
+				"Github: Repository"
+			],
+			[
+				"git",
+				"Github: Plugin Settings"
+			],
+			[
+				"prolo",
+				"Set Syntax: SWI-Prolog"
+			],
+			[
+				"winm",
+				"WinMerge: Show Diff"
+			],
+			[
+				"win",
+				"WinMerge: Show Diff"
+			],
+			[
+				"hive",
+				"Set Syntax: Hive"
+			],
+			[
+				"pig",
+				"Set Syntax: Pig"
+			],
+			[
+				"html",
+				"Set Syntax: HTML"
+			],
+			[
+				"snipper",
+				"Snippet: #!/usr/bin/env"
+			],
+			[
+				"hml",
+				"HTML: Encode Special Characters"
+			],
+			[
+				"",
+				"Set Syntax: JSON"
+			],
+			[
+				"side",
+				"View: Toggle Open Files in Side Bar"
+			]
+		],
+		"width": 472.0
+	},
+	"console":
+	{
+		"height": 125.0
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/C/Users/fsoster/Desktop/Hive-howto.hql",
+		"/C/Users/fsoster/AppData/Roaming/Sublime Text 2/Packages/User/Github Tools.sublime-settings",
+		"/C/Projetos/soster-testes/RESTEasyWebTest/WebContent/index2.html",
+		"/C/Users/fsoster/AppData/Roaming/Sublime Text 2/Packages/Emmet/README.md",
+		"/C/Users/fsoster/AppData/Roaming/Sublime Text 2/Packages/jQuery/README.md",
+		"/C/Users/fsoster/texto/teste.txt"
+	],
+	"find":
+	{
+		"height": 34.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"localhost",
+			"p",
+			"body",
+			"lenght",
+			"==========================\n"
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"></"
+		],
+		"reverse": true,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"selected": 2,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"settings":
+					{
+						"buffer_size": 6,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3,
+								3
+							]
+						],
+						"settings":
+						{
+							"auto_name": "",
+							"syntax": "Packages/SublimeREPL/config/Io/Io.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/R/R.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "/C/Users/fsoster/Desktop/GVT/Dominio_proxy/create_infra.jy",
+					"settings":
+					{
+						"buffer_size": 34749,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								22741,
+								22741
+							]
+						],
+						"settings":
+						{
+							"auto_indent": false,
+							"syntax": "Packages/WLST/wlst.tmLanguage",
+							"tab_size": 2,
+							"translate_tabs_to_spaces": true,
+							"word_wrap": true
+						},
+						"translation.x": 0.0,
+						"translation.y": 5597.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 34.0
+	},
+	"input":
+	{
+		"height": 31.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"replace":
+	{
+		"height": 0.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 500.0,
+		"selected_items":
+		[
+		],
+		"width": 380.0
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": false,
+	"side_bar_width": 255.0,
+	"status_bar_visible": true
+}

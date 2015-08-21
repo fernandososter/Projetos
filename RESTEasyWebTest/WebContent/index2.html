@@ -1,0 +1,111 @@
+
+
+<html>
+
+
+<head>
+	<script type="text/javascript" src="js/jquery-2.1.1.js"></script>
+
+	<script type="text/javascript">
+
+		$(document).ready(function(){
+			
+		$.ajax({
+				url: '/path/to/file',
+				type: 'default GET (Other values: POST)',
+				dataType: 'default: Intelligent Guess (Other values: xml, json, script, or html)',
+				data: {param1: 'value1'},
+			})
+			.done(function() {
+				console.log("success");
+			})
+			.fail(function() {
+				console.log("error");
+			})
+			.always(function() {
+				console.log("complete");
+			});
+
+		}); 
+
+
+		$.$.ajax({
+			url: '/path/to/file',
+			type: 'DELETE',
+			dataType: 'json',
+			data: {param1: 'value1'},
+		})
+		.done(function() {
+			console.log("success");
+		})
+		.fail(function() {
+			console.log("error");
+		})
+		.always(function() {
+			console.log("complete");
+		}); 
+
+		
+
+
+
+	</script>
+
+
+
+</head>
+<body>
+
+	<form>
+	
+		<table>
+			<a href=""></a>
+
+		</table>
+
+		<div>
+
+			<table>
+
+
+				<td></td>
+						<tr></tr>
+			</table>
+
+
+			Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+			tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+			quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+			consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+			cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+			proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+
+		</div>
+
+
+
+		<table>
+			
+			<tr>
+				<td>Nome: <input type="text" id="nome" /></td>
+			</tr>
+
+			<tr>
+				<td>idade: <input type="text" id="idade" /></td>
+			</tr>
+
+			<tr>
+				<td>cpf: <input type="text" id="cpf" /></td>
+			</tr>
+
+	
+		</table>
+
+	</form>
+
+
+
+</body>
+
+</html>

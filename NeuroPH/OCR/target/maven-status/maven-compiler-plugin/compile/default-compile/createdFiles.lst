@@ -1,0 +1,5 @@
+org\neuroph\ocr\OcrUtils.class
+org\neuroph\ocr\OcrPlugin.class
+org\neuroph\ocr\CharExtractor.class
+org\neuroph\ocr\OcrHelper.class
+org\neuroph\ocr\OcrSample.class
