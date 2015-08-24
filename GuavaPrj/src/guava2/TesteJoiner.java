@@ -2,9 +2,9 @@ package guava2;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Hashtable;
 
 import com.google.common.base.Joiner;
 
@@ -29,7 +29,12 @@ public class TesteJoiner {
 	 * 
 	 * Quando pegamos a instancia do Joiner, podemos chamar uma serie de metodos. 
 	 * Entre eles, um que faz um append do resultado em um StringBuilder ou 
-	 * em uma Interface Appendable. - appendTo(). 
+	 * em uma Interface Appendable (como a FileWriter). - appendTo(). 
+	 *
+	 * Existe tambem a MapJoiner, que faz o Join de maps. Nesse caso temos que 
+	 * passar o separador de chave-valor no on("#") e o separador de elemntos no 
+	 * withKeyValueSeparator("@")
+	 * 
 	 * 
 	 * 
 	 * */
@@ -71,13 +76,21 @@ public class TesteJoiner {
 	}
 	
 	
-	
 	private static void testJoiner2() {
 		
 		
+		Hashtable<String,String> ht = new Hashtable<String,String>(); 
+		ht.put("fernando", "gmail"); 
+		ht.put("fernando1", "gmail1"); 
+		ht.put("fernando2", "gmail2"); 
+		ht.put("fernando3", "gmail3"); 
+		ht.put("fernando4", "gmail4"); 
 		
+		StringBuilder sb= new StringBuilder(); 
 		
-		
+		// Joiner para maps. 
+		Joiner.on(" | ").withKeyValueSeparator("@").appendTo(sb, ht); 
+		System.out.println(sb.toString());
 	}
 	
 	
