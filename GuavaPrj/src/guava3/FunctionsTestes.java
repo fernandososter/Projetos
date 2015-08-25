@@ -50,6 +50,8 @@ public class FunctionsTestes {
 		System.out.println(numeros.apply("um")); 
 		System.out.println(numeros.apply("dez")); 
 		System.out.println(numeros.apply("dois")); 
+		
+		
 	}
 	
 	
