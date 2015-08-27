@@ -2,6 +2,7 @@ package guava4;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,9 @@ import com.google.common.base.Objects;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -59,6 +63,8 @@ public class ListSetMapsTestes {
 		setTestes();
 		mapTestes(); 
 		arrayListMultimapTestes(); 
+		biMapTestes(); 
+		tableTestes(); 
 	}
 	
 	
@@ -144,10 +150,44 @@ public class ListSetMapsTestes {
 		m.put("zoo",""); 
 		
 		System.out.println(m.get("foo")); 
-	
-		
-		
-		
+		Map<String,Collection<String>> map = m.asMap(); 
+		System.out.println(map.toString());
 	}
+	
+	
+	private static void biMapTestes() {
+		
+		BiMap<String,String> bm = HashBiMap.create(); 
+		
+		bm.put("1", "fernando"); 
+		bm.put("2", "soster"); 
+		// tentar inserir o mesmo valor vai retornar um IllegalArgumentExceptino
+		//bm.put("3", "fernando"); 
+			
+		System.out.println(bm.toString());
+		
+		bm.forcePut("3","fernando"); 
+		System.out.println(bm.toString());
+		
+		System.out.println(bm.inverse());
+	}
+	
+	private static void tableTestes() {
+		
+		HashBasedTable<Integer,Integer,String> hbt = HashBasedTable.create(); 
+		
+		hbt.put(1,1, "fernando"); 
+		hbt.put(1,2, "fernandoA"); 
+		hbt.put(2,1, "fernandoB"); 
+		hbt.put(2,2, "fernandoC"); 
+		
+		System.out.println(hbt);
+		
+		System.out.println(hbt.containsValue("fernando")); 
+		System.out.println(hbt.containsRow(1)); 
+		System.out.println(hbt.containsColumn(1)); 
+		System.out.println(hbt.containsColumn(11)); 
+	}
+	
 	
 }
