@@ -49,9 +49,48 @@ sem if:
 					
 					
 					
-Pg 63					
+ListenableFuture
+
+É uma implementacao que usa a classe Future do java 5 (exemplo de funcionamento na classe JavaRegularFuture) 
+que espera um objeto futuro. 				
+
+Com a ListenableFuture, o guava adiciona listeners que sao notificados quando o valor esta preenchido. 
+Esses elementos serao notificados e executarao algo. 
+
+
+FutureCallback
+
+é o mesmo principio do ListenableFuture mas é usada a classe Futures (que tem metodos estaticos para trabalhar com 
+a interface Future). 
+Nao adicionamos o FutureCallback diretamente no ListenableFuture, mas com o Futures.addCallback()
+
+A classe que será noticada implementa dois metodos, o success() e o failure(). 
+No success é passado o resultado do processamento, no failure a mensagem de erro. 
+
+
+SettableFuture
+usado para atribuir um valor a um ListenableFuture. 
+SettableFuture sf = SettableFuture.create()
+sf.set("")
+sf.setException(exception)
+
+The SettableFuture class is very valuable for cases
+when you have a method that returns a Future instance, but you already have the
+value to be returned and you don't need to run an asynchronous task. We will see
+in the next section just how we can use the SettableFuture class.
+
+Pesquisar sobre o AsyncFunction
+
+
+FutureFallback 
+
+usado para criar valores default quando ocorrer uma excpetion. 
+A classe obriga a implementacao de um metodo, o create(Throwable t)
+
+
+RateLImiter.
 					
 
-
+???
 
 
