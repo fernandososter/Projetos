@@ -215,8 +215,37 @@ JAVA MONITORING TOOLS
 		Podemos gerar um snapshot do heap para analisar em outras ferramentas como o Eclipse Memory Analyzer Tool
 	
  	Profiling a JVM
-	
-		(pag 51)
+		
+		Dispositivos que medem perfomance dentro das aplicacoes. Necessitam, geralmente
+		de um canal de comunicacao e grande quantidade de heap devido a grande quantidade de
+		informacao. 
+		
+		Profiles se dividem em 
+			- sampling profile
+			- instrumented profile (altera o byte code da app para medir a perfomance) 
+									( mais detalhada)
+			
+			
+	Java Mission Control (jmc)
+		Vem com as versoes pagas do 1.7.4 e 8 apartir. 
+		Ele consegue monitorar o sistema inteiro, nao somente a JVM. 
+		
+		Um dos maiores beneficios do JMC é o Java Flight Recorder (jfr) que 
+		grava as informacoes da JVM para analisar posteriormente. 
+		
+		O JFR grava as informacoes atraves de eventos da vm, threads,... e grava em um 
+		buffer circular em memoria ou arquivo. 
+		
+		A configuracao padrao do jfr gera um overhead de 1% na aplicacao. 
+		Conforme eventos sao adicionados, esse overhead aumenta. 
+		
+		Para habilitar o JFR em uma aplicacao, adicionar as flags no commandline:
+		-XX:+UnlockCommercialFeatures -XX:+FlightRecorder
+		Tambem pode ser habilitada no GUI do jmc
+		
+		
+		
+	 
 	 				 
 
 
