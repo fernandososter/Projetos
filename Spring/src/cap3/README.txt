@@ -121,7 +121,19 @@ public class PersistenceTest {
 ...
 }
 
-pag 72
+
+CONDITIONAL
+
+Pode ser aplicado a declaracao do bean no config e somente sera executado
+se a condicao passada for verdadeira (por ex, uma classe exista), senao o bean 
+sera ignorado: 
+
+	@Bean
+	@Conditional(MagicExistsCondition.class)
+	public MagicBean magicBean() {
+		return new MagicBean();
+	}
+
 
 
 
