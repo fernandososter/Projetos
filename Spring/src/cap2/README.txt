@@ -126,12 +126,225 @@ that what is returned is the Spring bean that was created when Spring
 itself called sgtPeppers() to create the CompactDisc bean.
 **********************************
 
-pag 46 iniciando beans with xml
+XML
+
+Para usar o xml: 
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context">
+		
+		<!-- configuration details go here -->
+</beans>
+
+Já a declaracao do bean é feita da seguinte forma:
+
+<bean class="soundsystem.SgtPeppers" />, onde o class é o fullpath. 
+
+tambem é possivel atribuir um id ao bean.
+
+<bean id="compactDisc" class="soundsystem.SgtPeppers" /> 
+
+Se nao for atribuido, o nome do bean será: soundsystem.SgtPeppers#0, onde é zero
+é o contador de quantas vezes o bean se repete na declaracao. 
 
 
+Injetando o bean no construtor:
+
+Existem duas formas de injetar o bean no construtor : 
+
+-> <construtor-arg> 	
+	como ja temos o bean compactDisc declarado, podemos passa-lo no contrutor de outro bean: 
+	
+	<bean id="cdPlayer" class="soundsystem.CDPlayer">	
+		<constructor-arg ref="compactDisc" />
+	</bean>
+
+** passar null para uma variavel: <constructor-arg><null/></constructor-arg>
+
+-> c-name
+	para injetar com c-name, precisamos primeiro declarar no nome no namespace: 
+	
+	xmlns:c="http://www.springframework.org/schema/c"
+
+	<bean id="cdPlayer" class="soundsystem.CDPlayer"
+			c:cd-ref="compactDisc" />
+			
+
+-> valores literais
+
+	Podemos iniciar os parametro de uma classe: 
+	
+	class BlankDisc...
+	public BlankDisc(String title, String artist) {
+		this.title = title;
+		this.artist = artist;
+	}
+	...			
+
+	a declaracao do bean ficaria assim: 
+	
+	<bean id="compactDisc" class="soundsystem.BlankDisc">
+		<constructor-arg value="Sgt. Pepper's Lonely Hearts Club Band" />
+		<constructor-arg value="The Beatles" />
+	</bean>
+	
+	ou entao com o c-name
+	<bean id="compactDisc" class="soundsystem.BlankDisc"
+			c:_title="Sgt. Pepper's Lonely Hearts Club Band"
+			c:_artist="The Beatles" />
+	
+	evoluindo para 
+	<bean id="compactDisc" class="soundsystem.BlankDisc"
+			c:_0="Sgt. Pepper's Lonely Hearts Club Band"
+			c:_1="The Beatles" />
+	
+
+Tem uma coisa que o <constructor-args> faz e os outros nao: passar collections: 
+
+Para um construtor do tipo:
+
+	public BlankDisc(String title, String artist, List<String> tracks) {
+
+podemos passar: 
+
+	<constructor-arg>
+		<list>
+		<value>Sgt. Pepper's Lonely Hearts Club Band</value>
+		<value>With a Little Help from My Friends</value>
+		<value>Lucy in the Sky with Diamonds</value>
+		<value>Getting Better</value>
+		<value>Fixing a Hole</value>
+		<!-- ...other tracks omitted for brevity... -->
+		</list>
+	</constructor-arg>
+	
+Alem do value, podemos passar uma referencia para beans ja criados. Nesse caso,
+usamos o ref. Porem o construtor deve receber um tipo de variavel compativel 
+com o bean: 
 
 
+	public Discography(String artist, List<CompactDisc> cds) { ... }
+	** os beans devem estar definidos. 
+	<constructor-arg>
+		<list>
+			<ref bean="sgtPeppers" />
+			<ref bean="whiteAlbum" />
+			<ref bean="hardDaysNight" />
+			<ref bean="revolver" />
+			...
+		</list>
+	</constructor-arg>
+
+*** Tambem é possivel passar SET. Basta mudar o <list> pelo <set>.
+
+METODOS 
+
+Se nao quisermos usar o construtor para iniciar os parametros, mas o metodo set, 
+pode deixar o default constructor e chamar o <property> para setar em um metodo: 
+
+	<bean id="cdPlayer" class="soundsystem.CDPlayer">
+		<property name="compactDisc" ref="compactDisc" />
+	</bean>
+
+* o Metodo que será chamado é o especificado no name (setCompactDisc) e o ref é a
+referencia a outro bean. 
+
+aqui ao inves do c namespace, podemos usar o p namespace: 
+
+para configurar: 
+	xmlns:p="http://www.springframework.org/schema/p"
+	
+e o corresponde do <property> 
+	
+	<bean id="cdPlayer" class="soundsystem.CDPlayer"
+			p:compactDisc-ref="compactDisc" />
+
+Para setar os argumentos dos metodos de forma literal: 
+	* metodos : setTitle, setArtist e setTracks
+	
+	<property name="title" value="Sgt. Pepper's Lonely Hearts Club Band" />
+	<property name="artist" value="The Beatles" />
+	<property name="tracks">
+		<list>
+			<value>Sgt. Pepper's Lonely Hearts Club Band</value>
+			<value>With a Little Help from My Friends</value>
+			<value>Lucy in the Sky with Diamonds</value>
+			<value>Getting Better</value>
+			<value>Fixing a Hole</value>
+			<!-- ...other tracks omitted for brevity... -->
+		</list>
+	</property>
+
+Da mesma forma aqui nao podemos usar o c-name para passar list ou set. Mas podemos 
+misturar os elements: 
+
+<bean id="compactDisc" class="soundsystem.BlankDisc"
+			p:title="Sgt. Pepper's Lonely Hearts Club Band"
+			p:artist="The Beatles">
+	
+	<property name="tracks">
+		<list>
+			<value>Sgt. Pepper's Lonely Hearts Club Band</value>
+			<value>With a Little Help from My Friends</value>
+			<value>Lucy in the Sky with Diamonds</value>
+			<value>Getting Better</value>
+			<value>Fixing a Hole</value>
+			<!-- ...other tracks omitted for brevity... -->
+		</list>
+	</property>
+</bean>
 
 
+No entanto podemos usar o util-namespace. Ele nos possibilita adicionar lista como 
+parametros:
 
+	<util:list id="trackList">
+		<value>Sgt. Pepper's Lonely Hearts Club Band</value>
+		<value>With a Little Help from My Friends</value>
+		<value>Lucy in the Sky with Diamonds</value>
+		<value>Getting Better</value>
+		<value>Fixing a Hole</value>
+		<!-- ...other tracks omitted for brevity... -->
+	</util:list>
 
+Para adiciona-lo, precisamos adicionar o xml namespace: 
+
+	xmlns:util="http://www.springframework.org/schema/util"
+	
+agora podemos adicionar a lista no bean: (nome trackList). 
+
+	<bean id="compactDisc" class="soundsystem.BlankDisc"
+			p:title="Sgt. Pepper's Lonely Hearts Club Band"
+			p:artist="The Beatles"
+			p:tracks-ref="trackList" />
+			
+** alem do <util:list>, temos: 
+
+	<util:constant> <util:list> <util:map> 
+	<util:properties>
+	<util:property-path> <util:set> 
+	
+
+SEPARANDO CONFIGS
+
+	Se os configs estiverem muito grandes e precisarmos separa-los, podemos fazer. 
+	No entanto, precisamos que um referencie o outro. Para isso, usar o @Import: 
+	@Import(CDConfig.class)
+	
+	Podemos até declarar um config superior aos dois e usa-lo para unificar tudo, 
+	importanto os dois dentro do superior: 
+	
+	@Import({CDPlayerConfig.class, CDConfig.class})
+	
+	
+	
+	
+	
+	
+	
+				
+	
