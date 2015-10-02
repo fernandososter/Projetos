@@ -195,11 +195,205 @@ Because this method handles GET requests for /spittles, the view name is spittle
 the leading slash).
 
 
-Pag 148 item 5.3
+Para enviar dados do cliente para o servidos, existem tres alteranativas: 
+
+	- Query Parameters
+	- Form parameters
+	- Path variables
+	
+Query Parameters
+
+	Obtem os valores do get? Precisa sobrecarregar o metodo? Assim quando os parametros forem enviados, 
+	o metodo ja esta preparado para receber. 
+	
+	
+	@RequestMapping(method=RequestMethod.GET)
+	public List<Spittle> spittles(
+		@RequestParam("max") long max,
+		@RequestParam("count") int count) {
+			return spittleRepository.findSpittles(max, count);
+	}
+
+	Nao, o metodo é o mesmo, nao precisa de sobrecarga. 
+ 	Para tratar quando os valores nao estiverem presentes, podemos colocar valores default: 
+ 	
+ 	@RequestMapping(method=RequestMethod.GET)
+	public List<Spittle> spittles(
+		@RequestParam(value="max",
+		defaultValue=MAX_LONG_AS_STRING) long max,
+		@RequestParam(value="count", defaultValue="20") int count) {
+		
+			return spittleRepository.findSpittles(max, count);
+	}
+	
+	
+Path VAriables
+	
+	Enquanto no primeiro Query passamos os valores da seguinte forma: /spittles/show?spittle_id=12345
+	No path passamos: /spittles/12345
+** nao ocorre a identificacao do elemento
+
+	No path variables é implementado o conceito de placeholders (variaveis com {}): 
+	
+	@RequestMapping(value="/{spittleId}", method=RequestMethod.GET)
+	public String spittle(
+		@PathVariable("spittleId") long spittleId, Model model) {
+			model.addAttribute(spittleRepository.findOne(spittleId));
+			return "spittle";
+	}
+
+** o parametro agora é anotado com @PathVariable. Ele quer dizer que, qualquer informacao passada apos o /splittes
+será usado como variavel "spittletId"
+** Podemos omitir o value do @PathVariable se o nome da variavel do metodo bater com o requestmapping. 
 
 
+No entanto Query e Path variables sao limitadas na quantidade de parametros que consegue passar. Para passar
+mais informacoes, processing forms
+
+Processing Forms
+
+O form tem duas funcionalidades importantes: 
+	- display form
+	- processing data that the user submits. 
+	
+
+Para essa funcionalidade, o livro cria um novo Controller
+	
+	@Controller
+	@RequestMapping("/spitter")
+	public class SpitterController {
+		@RequestMapping(value="/register", method=GET)
+		public String showRegistrationForm() {
+			return "registerForm";
+		}
+	}
+** esse metodo @RequestMapping nao recebe input, apenas retorna o fluxo para a pagina registerForm (se for o 
+InternalResourceViewResolver, direcinara para /WEB-INF/views/registerForm.jsp
+
+Essa pagina (registerForm) vai precisar ter um form declarado: 
+
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ page session="false" %>
+<html>
+<head>
+<title>Spittr</title>
+<link rel="stylesheet" type="text/css"
+href="<c:url value="/resources/style.css" />" >
+</head>
+<body>
+<h1>Register</h1>
+	<form method="POST">
+	First Name: <input type="text" name="firstName" /><br/>
+	Last Name: <input type="text" name="lastName" /><br/>
+	Username: <input type="text" name="username" /><br/>
+	Password: <input type="password" name="password" /><br/>
+	<input type="submit" value="Register" />
+	</form>
+</body>
+</html>
+	
+** O form declarado acima nao tem um action declarado. Isso significa que quando for submetido, será para o 
+mesmo endereço que destinou para ele (/spitters/register)
+
+Para criar um metodo que vai processar o submit do form: 
+
+	@Controller
+	@RequestMapping("/spitter")
+	public class SpitterController {
+		private SpitterRepository spitterRepository;
+
+		@Autowired
+		public SpitterController(SpitterRepository spitterRepository) {
+			this.spitterRepository = spitterRepository;
+		}
+		
+		@RequestMapping(value="/register", method=GET)
+		public String showRegistrationForm() {
+			return "registerForm";
+		}
+		
+		@RequestMapping(value="/register", method=POST)
+		public String processRegistration(Spitter spitter) {
+			spitterRepository.save(spitter);
+			return "redirect:/spitter/" + spitter.getUsername();
+		}
+		
+		@RequestMapping(value="/{username}", method=GET)
+		public String showSpitterProfile(@PathVariable String username, Model model) {
+			Spitter spitter = spitterRepository.findByUsername(username);
+			model.addAttribute(spitter);
+			return "profile";
+		}
+		
+	}
+
+** O proprio spring ja cria a instancia do bean Splitter e popula as informacoes. 
+A primeira linha é um save no repositorio. A segunda e o return.
+O return tem um "redirect:". Esse cara diz so InternalResourceViewResolver para apenas direcionar a pagina. 
+
+** o InternalResourceViewResolver tem tambem o forward:
+
+** o metodo showSplitterProfile() é o chamado no redirect: que vai tratar a informacao (por path variable). 
+
+e para mostrar a informacao no html
+
+<h1>Your Profile</h1>
+<c:out value="${spitter.username}" /><br/>
+<c:out value="${spitter.firstName}" />
+<c:out value="${spitter.lastName}" />
 
 
+VALIDATING FORMS 
+
+Ao inves de colocar um monte de if no codigo para verificar se os parametros passados no form estao corretos, 
+podemos usar a Java Validation API (JSR303). Isso é possivel apartir do String 3.0. 
+
+Apenas precisamos garantir que uma implementacao da JSR303 esteja no classpath (Hibernate Validator por exemplo). 
+
+Existem varias annotation no JVA que podemos usar para validar os properties
+ (todos no pacote javax.validation.constraints)
+
+@AssertFalse @AssertTrue @DecimalMax @DecimalMin @Digits @Future @Max @Min @NotNull 
+@Null @Past @Pattern @Size ( e mais)
+
+Exemplo de como ficaria o bean:
+
+	public class Spitter {
+		private Long id;
+		@NotNull
+		@Size(min=5, max=16)
+		private String username;
+		
+		@NotNull
+		@Size(min=5, max=25)
+		private String password;
+		
+		@NotNull
+		@Size(min=2, max=30)
+		private String firstName;
+		
+		@NotNull
+		@Size(min=2, max=30)
+		private String lastName;
+		...
+	}
+
+e para fazer a validacao, precisamos mudar o metodo que recebe o form:
+
+	@RequestMapping(value="/register", method=POST)
+	public String processRegistration( @Valid Spitter spitter, Errors errors) {
+		if (errors.hasErrors()) {
+			return "registerForm";
+		}
+		
+		spitterRepository.save(spitter);
+		return "redirect:/spitter/" + spitter.getUsername();
+	}
+
+** o @Valid faz com que o spring valide as informacoes do Spitter. 
+** as validacoes nao impedem que o bean seja submetido ao servidor. 
+** se ocorrer erros, eles serao jogados em Errors (importante que a primeira coisa a ser feita seja uma 
+consulta se existem erros)
 
 
 
