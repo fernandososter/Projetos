@@ -1,6 +1,12 @@
 AOP
 
 
+This chapter covers
+- Basics of aspect-oriented programming
+- Creating aspects from POJOs
+- Using @AspectJ annotations
+- Injecting dependencies into AspectJ aspects
+
 cross-cutting concerns - sao funcionalidades pararelas ao core busines, como logging, 
 security, transaction e caching, que AFETAM TODO O SISTEMA.
 
@@ -25,9 +31,12 @@ AOP tem os proprios jargoes:
 	POINTCUTS: define quais joinpoints serão aplicados o advices. é o where. 
 	
 	ASPECTS: é a juncao do advice com os join points. Sao todas as informacoes necessarias para ser aplicado. 
-			em um ponto. 
+			em um ponto. É um merge de advice e pointcut.
+			
 			
 	INTRODUCTIONS: ???
+	
+	WEAVING: ???
 	
 Fig na 99 explica melhor o funcionamento. 
 

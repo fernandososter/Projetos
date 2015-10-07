@@ -34,28 +34,53 @@ Ex: suportar multipart uploads:
 		registration.setMultipartConfig(new MultipartConfigElement("/tmp/spittr/uploads"));
 	}
 
-** configurando para armezenar arquivos na pasta acima. 
+** configurando para armezenar arquivos que sofreram upload na pasta acima. 
+
+
+
+
+Servlets, Filters e Listeners
 
 ** o spring permite criar varios WebApplicationInitializer
 
-Registrando um Servlet
-
 	public class MyServletInitializer implements WebApplicationInitializer {
+		//Registrando um Servlet
 		@Override
 		public void onStartup(ServletContext servletContext)throws ServletException {
 			Dynamic myServlet =servletContext.addServlet("myServlet", MyServlet.class);
 			myServlet.addMapping("/custom/**");
 		}
+		
+		//Registrando filter e mapping
+		@Override
+		public void onStartup(ServletContext servletContext) throws ServletException {
+			javax.servlet.FilterRegistration.Dynamic filter = servletContext.addFilter("myFilter", MyFilter.class);
+			filter.addMappingForUrlPatterns(null, false, "/custom/*");
+		}
 	}
 
 
-Registrando filter e mapping
-	
-	@Override
-	public void onStartup(ServletContext servletContext) throws ServletException {
-		javax.servlet.FilterRegistration.Dynamic filter = servletContext.addFilter("myFilter", MyFilter.class);
-		filter.addMappingForUrlPatterns(null, false, "/custom/*");
-	}
+DispatcherServlet no web.xml
 
+<web-app>
 
-
+// setando o context root location
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>/WEB-INF/spring/root-context.xml</param-value>
+	</context-param>
+// setando o context loader listenere	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+// setando o Register Dispatcher Servlet	
+	<servlet>
+		<servlet-name>appServlet</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+// apontando o dispatcherserlvet para o /	
+	<servlet-mapping>
+		<servlet-name>appServlet</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
