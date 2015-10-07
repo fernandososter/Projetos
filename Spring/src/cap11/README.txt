@@ -327,27 +327,146 @@ tambem precisa do bean abaixo
 					
 
 			
-	Repositorios automaticos com SPRING DATA.
+	Repositorios automaticos com SPRING DATA JPA.
 	
 		Mesmo fazendo uma implementacao mais alto nivel com hibernate, jpa,... ainte temos implementacoes
 		especificas nos metodos. Por exemplo, usando o session ou entitymanager (persist, merge,..)
 		
-pag 318			
+		Com o spring data esse problema é resolvido e nao precisamos implementar nada. 
+		
+		1) declarar interface JpaRepository para o spring saber que queremos cnotrola um objeto 
+			Spitter, que tem uma chave do tipo Long
+		
+			public interface SpitterRepository extends JpaRepository<Spitter, Long> {}
 			
+			Essa interface ja vai nos fornecer implicitamente 18 metodos para interagir com os 
+			objetos Spitter.
 			
+			Mas ainda assim precisamos sobrescrever esses 18 metodos criando um SpitterRepository? Nao: 
+			 
+			O spring cria o repository automaticamente com as implementacoes: 
 			
+		2) para criar o repository: <jpa:repositories base-package="com.habuma.spittr.db" />
+		
+			<?xml version="1.0" encoding="UTF-8"?>
+			<beans xmlns="http://www.springframework.org/schema/beans"
+				xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+				xsi:schemaLocation="http://www.springframework.org/schema/data/jpa
+				http://www.springframework.org/schema/data/jpa/spring-jpa-1.0.xsd">
 			
+				<jpa:repositories base-package="com.habuma.spittr.db" />
+				...
+			</beans>
+			 
+			 Isso faz com que o Spring saia procurando no base-package as interfaces marcadas com o 
+			 @Repository e gera uma implementacao para elas. 
+			 
+			** Com o java configuration: 
+			 	
+			 	@Configuration
+				@EnableJpaRepositories(basePackages="com.habuma.spittr.db")
+				public class JpaConfiguration {
+					...
+				}
+							
+** os 18 metodos implementados sao herança de JpaRepository, PagingAndSortingRepository, and CrudRepository.
+** Essa implementacao é gerada quando a aplicacao sobe, nao quando é compilada. 
+
+			Mas e se precisarmos de algum metodo alem desses 18? 
+			Podemos implemntar: 
 			
+		
+		Definindo Query Methods
+		
+			Se precisa definir um metodo customizado de procura por um nome, por exemplo, 
+			podemos alterar a interface e definir um metodo para isso:
+			
+				public interface SpitterRepository extends JpaRepository<Spitter, Long> {
+					Spitter findByUsername(String username);
+				}
+		
+			O spring vai inferir pelo nome dometodo, pelo parametro passado e pelo retorno, 
+			que queremos buscar um elemento pela string username (1, nao uma lista) e vai 
+			criar a implementacao do metodo juntamente com os outros 18. 
+			
+			O spring busca o padrao no nome do metodo: 
+				verbo+sujeito+predicado
+			Ex: readSpitterByFirstnameOrLasnameOrderByLastname()
+				
+				verbo + Sujeito +  Predicado
+				read 	Spitter 	By....
+			
+				
+				Podem ser usado 4 predicados: (get read find sao sinonimos)
+					get - retorna objetos
+					read - retorna objetos
+					find - retorna objetos
+					count - retorna um numero
 			
 		
+				O sujeito pode ou nao ser passado. Se nao for é implicito (O spring sabe pelo 
+				generic que foi passado no JpaRespository interface). 
+				
+				** uma excecao. Se no sujeito estiver a palava Distinct, entao o Spring vai 
+				se organizar para retornar um valor distinto. 
+				
+				O predicado tem varias comparacoes que podem ser feitas. 
+				Tem uma lista na pag 322 com alguns predicados
+				
+				Existem varias outras caracteristicas que vale a pena olhar o manual....
+				
+			Custom Queries com o SD JPA
+			
+				Para implementar um metodo em que ficaria dificil de organizar por nome, ou
+				um nome muito grande, podemos estipular a query com o @Query: 
+				
+				para buscar todos os spitter que tem email gmail. 
+				
+					@Query("select s from Spitter s where s.email like '%gmail.com'")
+					List<Spitter> findAllGmailSpitters();
 		
+			Mair poderoso
+				
+				se o @Query ainda nao for suficiente para o que precisamos, ainda podemos implementar um 
+				recurso mais baixo nivel mas mesmo assim usando o Spring data jpa. 
+				
+				Quanto tem uma interface tipo o SpitterRepository, o spring mesmo assim vai procurar 
+				por uma classe com o mesmo nome da interface, seguida por um Impl.
+					SpitterRepositoryImpl
+					
+				O spring entao vai pegar esse implementacao e fazer o merge com a classe que ele irá implementar. 
+				
+				Exemplo de uma implementacao: 
+				
+					public class SpitterRepositoryImpl implements SpitterSweeper {
+						@PersistenceContext
+						private EntityManager em;
+					
+						public int eliteSweep() {
+							String update =
+								"UPDATE Spitter spitter " +
+								"SET spitter.status = 'Elite' " +
+								"WHERE spitter.status = 'Newbie' " +
+								"AND spitter.id IN (" +
+								"SELECT s FROM Spitter s WHERE (" +
+								" SELECT COUNT(spittles) FROM s.spittles spittles) > 10000" +
+								")";
+							return em.createQuery(update).executeUpdate();
+						}
+					}
 		
+		** a interface que a classe implementa é a SpitterSweeper. Na classe SpitterRepository, temos que 
+		adicionar essa interface tambem: 
+				public interface SpitterRepository extends JpaRepository<Spitter, Long>,SpitterSweeper {
+					....
+				}
+						
+		e entao no final: 
 		
-		
-		
-		
-		
-		
+			@EnableJpaRepositories(basePackages="com.habuma.spittr.db",repositoryImplementationPostfix="Helper")
+		ou no xml
+			<jpa:repositories base-package="com.habuma.spittr.db" repository-impl-postfix="Helper" />
 		
 		
 		
