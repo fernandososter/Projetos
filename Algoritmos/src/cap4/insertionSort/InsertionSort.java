@@ -14,16 +14,16 @@ public class InsertionSort {
 	 * quando o arr esta ordenado na ordem inversa. 
 	 * 
 	 * Na melhor performance, quando todos os elementos estao ordenados, 
-	 * a performance é O(n), pois vai ter que iterar a lista mesmo que esteja 
+	 * a performance ï¿½ O(n), pois vai ter que iterar a lista mesmo que esteja 
 	 * ordenada. 
 	 * 
-	 * No pior caso e na media, a performance será O(n²), pois será feito outro 
+	 * No pior caso e na media, a performance serï¿½ O(nï¿½), pois serï¿½ feito outro 
 	 * loop quando o arr nao estiver ordenado para procurar a posicao correta. 
 	 * 
-	 * No insertionsort faz diferença ser ponteiro ou baseado em valor. 
-	 * O ponteiro é mais rapido pois ocorre a substituição no valor do array. 
+	 * No insertionsort faz diferenï¿½a ser ponteiro ou baseado em valor. 
+	 * O ponteiro ï¿½ mais rapido pois ocorre a substituiï¿½ï¿½o no valor do array. 
 	 * 
-	 * O principio dele é pegar um elemento por vez e comparar a um elemento do array. 
+	 * O principio dele ï¿½ pegar um elemento por vez e comparar a um elemento do array. 
 	 * Enquanto o elemento do array for maior, ele vai deslocando esse elemento para a
 	 * direita. Quando encontra um menor, insere na posicao + 1. 
 	 * 

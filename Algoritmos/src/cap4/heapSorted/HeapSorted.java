@@ -8,7 +8,7 @@ public class HeapSorted {
 	/*
 	 * 
 	 * O heapsort usa a tatica das elimatorias de futebol para comparacao. 
-	 * Por exemplo, 64 times, terão 6 vitorias até o final: 
+	 * Por exemplo, 64 times, terï¿½o 6 vitorias atï¿½ o final: 
 	 * 	
 	 * 	log(64) = 6 
 	 * 
@@ -16,7 +16,7 @@ public class HeapSorted {
 	 * worst: log(n log n) wiki ( - 2n log n + O(n) - )
 	 * avarage: log(n log n) 
 	 * 
-	 * ** N log n quer dizer que o processamento será quebrado em dois dentro do mesmo 
+	 * ** N log n quer dizer que o processamento serï¿½ quebrado em dois dentro do mesmo 
 	 * metodo, mas que o arr sera varrido inteiro. 
 	 * 
 	 * Algoritmo nao estavel (em caso de igualdade, nao mantem a formacao original). 
