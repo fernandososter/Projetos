@@ -1,0 +1,88 @@
+
+
+
+ Os algoritmos de sorting podem interagir com pointer based ou value based 
+ datasets. Pointer based sao ponteiros para valores em memoria, value based
+ trabalha direto com o valor. 
+ 
+ Para os pointer based, o merge sort tem uma boa performance. 
+ 
+ 
+ Algoritmos stable são aqueles que mantem a formacao original quando dois valores sao 
+ ditos iguais. (a comparacao pode considerar uma varivel mas nao as outras). 
+ Ou seja, vai manter a posicao original quando iguais. 
+ 
+ 
+ Criterios de escolha :
+ 
+ 	poucos itens : 					Insertion Sort
+ 	muitos itens ja em ordem: 		Insertion Sort
+ 	preocupacao com worst case: 	Heap Sort
+ 	interesse no avarage-case : 	Quick sort
+ 	itens muito densos 				Bucket Sort
+ 	escrever menos codigo			Insertion Sort
+ 	stable sort						Merge Sort
+ 	
+ 	
+
+
+TRANSPOSITION SORT 
+
+ Insertion Sort
+ 
+ Best: O(n) - varre o array ao menos uma vez, mesmo estando ordenado
+ Avarage, Worst: O(n2) - se estiver em ordem invevrsa. 
+ 	
+ 	
+ 	Varre o array e vai inserindo o elemento comparando com os que 
+ 	ja estao presentes. 
+ 
+ 	O insertion sort requer muito pouco espaco para funcionar, ja
+ 	que trabalha sobre o array. 
+ 
+ 	
+ sort(A)
+ 	for pos = 1 to n-1 do
+ 		insert (A, pos, A[pos])
+ 	end
+ 	
+ insert(A, pos, value)
+ 	i = pos -1
+ 	while(i >= 0 and A[i] > value do
+ 		A[i+1] = A[i]
+ 		i = i-1
+ 	
+ 	A[i+1] = value
+ end
+ 
+ 
+ Selection Sort
+ 	
+ 	Esse algoritimo pega um elemento e vai transportando ele para o mais a esquerda 
+ 	possivel. 
+ 	
+ 	É um dos mais lentos pois demanda execucao quadratica mesmo no melhor caso (ja
+ 	estar ordenado). 
+ 	
+ 	A cada reposicao ele pega o max() dos elementos faltantes e coloca na posição 
+ 	mais a esquerda (menos o da execucao anteior). 
+ 	
+ ** ver codigo (esta a ordenacao pelo menor e nao pelo maior)
+ 
+ 
+ 
+ HEAP SORT
+ 
+ 	Para ordenar um array é necessário n-1 comparacoes. O heap sort tenta diminuir o numero 
+ 	de comparações elevando os maiores valores em uma arvore. Como nas chaves de campeonatos. 
+ 	
+ 	O calculo para descobrir o numero de comparacoes é log(n). 
+ 	
+ 	
+ 	
+ 	
+ 	
+ 		
+ 
+ 
+ 

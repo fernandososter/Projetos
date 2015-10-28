@@ -1,0 +1,105 @@
+
+
+Grafos sao compostos por  vertices (nos) e edges (relacionamentos)
+
+3 tipos de grafos
+
+	Undirects, unweighted : sem direcinamento. Ex estrada ligando cidades
+	
+	Direct Graphs: uma direcao. 
+	
+	Weighted grapfs: com um peso associado ao relacionamento. 
+			(numero ou outra infomacao). 
+			
+
+O peso muitas vezes pode ser negativo em algumas aplicacoes, indicando uma 
+perda e nao um lucro. Mas isso depende muito da aplicacao. 
+
+
+Se a quantidade de grafos nao for muito grande, podemos usar uma linkedlist, onde
+é armazenado o nome do vertice e o valor do relacionamento. Pag 153. 
+
+A quantidade de vertices sendo muito grande e necessitando de acesso rapido, o melhor
+e usar uma matriz. pag 154
+
+
+Existem duas formas de realizar procura em grafos: 
+	
+	Depth-First Search    (profundidade)
+	Breadth-First Search	(largura)
+	
+
+	Depth-First Search
+		
+		tem uma funcao recursiva chamada dfsVisit() que visita um vertice ainda nao 
+		visitado previamente. 
+		
+		Ele marca os vertices ja visitados com "cores".
+			Branco: ainda nao visitado
+			Cinza: ja visitado, mas com vertice adjacente ainda nao visitado
+			Preto: ja visitado e sem adjacentes nao visitados
+			
+		Para encontrar o caminho faz tentativas cegas até encontrar a saida. 
+		
+		
+		Best, Average Worst : O(V+E)
+		
+			
+			depthFirstSearch(G,s)
+				foreach v in V do
+					discovered[v] = finished[v] = pred[v] = -1
+					color[v] = White
+				counter = 0
+				dfsVisit(s)
+			end
+			
+			dfsVisit(u)
+				color[u] = Gray
+				discovered[u] = ++counter
+				
+				foreach neighbor v of u do
+					if color[v] = Whiete then
+						pred[v] = u
+						dfsVisit(v)
+				color[u] = Black
+				finished[u] = ++counter
+			end
+			
+		
+		O depth search começa visitando o s dfsVisit(s) e entao parte para os vertices
+		adjacentes de s dfsVisit(u) recursivamente, até que nao tenha mais vertices
+		na cor branca adjacentes ao s. A funcao entao retorna. 
+		
+		Depois de retornar, o depth entao pega o vertice mais proximo a s e visita os 
+		vertices que ainda nao foram visitado adjacentes a esse. 
+		
+		O depth vai sitando todos os vertices que podem ser atingidos apatir de s. 
+		ele mantem um contador de quando é a primeira visita ou quando o elemento 
+		ja atingiu o black (todos os adjacentes visitados)
+		
+		records: 
+			pred[v] : usado para manter o caminho para o s. 
+			discovered[v] : quando o depth encontra pela primeira vez o v (gray?)
+			finished[v] : quando termina com o vertice v (black?)
+			
+		
+			
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+
+
+ 

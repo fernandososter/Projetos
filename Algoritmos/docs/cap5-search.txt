@@ -1,0 +1,184 @@
+
+O search tem dois objetivos: 
+
+	- Existence: apenas verificar se um elemento existe e retornar true ou false
+	- Associative lookup: retorna o valor 
+	
+---------------------------------------------	
+Small Collections: Sequencial Search
+
+Restrict memory: Bynary Search
+
+Dynamic membership (muitas trocas de valores): HashBased Search e Binary Search Tree
+
+Sorted Access: Binary Search Tree
+---------------------------------------------
+
+
+SEQUENCIAL SEARCH
+	
+	
+	busca sequencial (tambem chamada de linear) que varre o array inteiro
+	e quando encontra o elemento para. É um algoritmo de forca bruta. 
+	
+	Best O(1)    Avarage, Worst O(n)
+	
+	search(A,t)
+		for i=0 to n-1 do
+			if A[i] = t then
+				return true
+		return false
+	end
+	
+
+BINARY SEARCH
+	Tem perfomance melhor que o sequencial search pq o array ja esta ordenado e ele 
+	divide o problema em varias partes. 
+	
+	Best O(1)	Average, Worst: O(log n)
+	
+	search(A,t)
+		low = 0
+		high = n-1
+		
+		while low <= high do
+			mid = (low + high)/2
+			
+			if A[mid] = t then
+				return true
+			else if t < A[mid]
+				high = mid -1
+			else 
+				low = mid +1
+				
+		return false	
+	end
+	
+	Essa estrategia é boa se os elementos nao mudam frequentemente. 
+	Podemos jogar os valores em um array e procurar. 
+	
+	Para valores que mudam com frequencia o melhor é o Binary Search Tree
+	
+
+HASHBASED SEARCH
+
+	Utiliza-se de um componente chamado hash table para fazer a procura. 
+	
+	Na inicializacao (ou primeira procura), o tempo gasto será linear 
+	O(n). Mas em compensacao nas proximas buscas o processo será bem mais 
+	rapido. 
+	
+	Pode acontecer de valores ter o mesmo codigo hash. Isso é chamado de collision
+	e o processo deve estar preparado para gravar mais de um valor com o mesmo hash. 
+	Isso é possivel colocando uma linked list dentro do objeto do id. 
+	Quando for realizar a busca nessa linkedlist, terá que ser uma busca linear. 
+	
+	Best, Average: O(1)     Worst: O(n)
+	
+	loadTable(size, C)
+		H = new array of given size
+		
+		foreach e in C do
+			h = hash(e)
+			if H[h] is empty then
+				H[h] = new Linked List
+			
+			add e to H[h]
+			
+		return A
+	end
+	
+	search(H,t)
+		h = hash(t)
+		list = H[h]
+			
+		if list is empty then
+			return false
+			
+		if list contains t then
+			return true
+		
+		return false
+	end
+	
+	Usando o HashBased e jogando os valores no linked list dentro 
+	do objeto, diminuimos o numero de comparacoes de n para log n
+
+	O segredo é como dividimos os hashs. Por exemplo, para todas as 
+	palavras da lingua inglesa podemos colocar a primeira letra, ou fazer
+	uma mescla de primeira letra e se é verbo, substantivo,...
+	
+	
+BLOOM FILTER
+	
+	Usar um array de bits para dizer se o elemento possivelmente esta 
+	no array ou se definitivamente nao esta. 
+	
+	usado no bigtable e no hbase para evitar procuras desnecessarias em disco. 
+	Se o elemento nao estiver no bitarray, nem procura no banco. 
+	
+	
+	best, average, worst : O(k)
+	
+	create(m)
+		return bit array of m bits
+	end		
+		
+	add(bits, value)
+		foreach hashFunction hf
+			setbit = 1 << hf(value)
+			bits |= setbit
+	end
+	
+	search(bits,value)
+		foreach hashFunction hf
+			checkbit = 1 << hf(value)
+			if checkbit | bits == 0 then
+				return false
+		
+		return true
+	end
+		
+
+	Quando inserimos um numero no array, a posicao (ou a combinacao) é marcada com 1 no bloom filter. 
+	(por isso que ocorrem falsos positivos). 
+	
+	O bloom filter somente deve ser usado quando a app permite falsos positivos, como finalidade evitar
+	consultas desnecessarias. 		
+		
+	No retorno sao comparado os valores da consulta. Se existir um 0, quer dizer que o elemento
+	definitivamente nao esta no array. 
+	
+	Nao é possivel remover um valor do bloom filter pois se fizermos vamos corromper o bloom filter, 
+	podendo elimar referencias a outros valores. 
+	
+	
+BINARY SEARCH TREE
+
+	Usa uma arvore binaria para realizar a procura. Tem o conceito de elemento da esquerda e elemento da direita. 
+	O da esquerda é sempre menor que o root. Ja  o da esquerda é maior. 
+	
+	
+	Temos que balancear a tree para evitar que ela fique uma tripa. (Skewed) 
+	
+	Se a arvore estiver balanceada conseguimos uma perfomance de O(log n). 
+	Caso a arvore nao esteja, teremos que varrer a arvore inteira para achar o objeto, 
+	assim, O(n)
+	
+	O livro usa uma AVL Tree que é autobalanceada. Assim cada valor que inserimos a 
+	arvore vai se balancear. 
+	
+	Para poder fazer um balanceamento, temos que calcular o peso de ambos os lados da arvore. 
+	O calculo é feito da seguinte forma: 
+		
+		o peso de um leaf  é 0 : nao tem filhos. 
+		o peso de um nao leaf (ou seja tem filhos) é 1 mais o peso dos filhos. 
+		o peso de uma posicao sem filhos é -1 
+		
+		Agora definir duas funcoes para calcular o peso - height() 
+		e uma para calcular a diferença entre direita e esquerda  heightDifference() : height(left) - height(right)
+				
+	
+	
+
+
