@@ -39,7 +39,8 @@ Existem duas formas de realizar procura em grafos:
 			Cinza: ja visitado, mas com vertice adjacente ainda nao visitado
 			Preto: ja visitado e sem adjacentes nao visitados
 			
-		Para encontrar o caminho faz tentativas cegas at√© encontrar a saida. 
+		Para encontrar o caminho faz tentativas cegas at√© encontrar a saida. Como ele nao tem 
+		conhecimento da topologia do grafo, sai buscando pelos relacionamentos. 
 		
 		
 		Best, Average Worst : O(V+E)
@@ -83,14 +84,92 @@ Existem duas formas de realizar procura em grafos:
 			finished[v] : quando termina com o vertice v (black?)
 			
 		
+		Como o DFS visita uma vez o grafo, tera uma perfomance O(n) e o controle das cores
+		È feito em uma matriz ou array separado do grafo. Isso torna o grafo read-only. 
+		
+		
+			
+	Breadth-First Search (largura)
+	
+		A busca em largura age de forma diferente do que profundidade. A busca em largura 
+		efetua a busca por uma distancia k de s antes de k+1 (ou seja, por layers). 
+		
+		Ele nao visita vertices que nao tenham ligacao com s. Esse algoritmo funciona com 
+		grafos diretos ou indiretos. 
+		
+		
+		Best, Average, Worst O(V+E)
+			
+			breadthFirstSearch(G,s)
+				
+				foreach vin V do
+					pred[v] = -1
+					dist[v] = infinito
+					color[v] = White
+				
+				color[s] = Gray
+				dist[s] = 0
+				Q = empoty Queue 
+				enqueue(Q,s)
+				
+				while Q is not empty do
+					u = head(Q)
+					
+					foreach neighbor v of u do
+						if color[v] = White then
+							dist[v] = dist[u] +1
+							pred[v] = u
+							color[v] = Gray
+							enqueue(Q,v)
+							
+						dequeue(Q)
+						color[u] = Black
+			end
+		
+	
+	Single-Source Shortest Path
+	
+		Para calcular a menor distancia usamos o dijkstras algorithm. 
+		
+		Esse algoritmo confia em um priority queue que tem uma coleÁ„o de itens 
+		com um valor de peso associado. 
+		
+			Best, Average, Worst O( (V+E)*logV ) 
+		
+			singleSourceShortest(G,s)
+				
+				PQ = empty Priority Queue
+				
+				foreach v in V do
+					dist[v] = infinito
+					pred[v] = -1
+					
+				dist[s] = 0
+				foreach v in V do
+					insert (v,dist[v]) into PQ
+					
+				while PQ is not empty do
+				
+					u = getMin(PQ)
+					foreach neighbor v of u do
+						
+						w = weight of edge (u,v)
+						newLen = dist[u] + w
+						if newLen < dist[v] then
+							decreasePriority (PQ,v,newLen)
+							dist[v] = newLen
+							pred[v] = u
+			
+			end
+		
+		
+		Existem duas funcoes, o getMin() e o decreasePriority(). 
+			getMin() - retorna o valor minimo do que esta no PQ. ( o item mais importante)
+			decreasePriority() - possibilita ajustar o valor em PQ confome a analise È feita. (aumentar a importancia de um item)
+			
 			
 		
-		
-		
-		
-		
-		
-		
+			
 		
 		
 		

@@ -21,6 +21,9 @@ class AVLNode {
 	}
 }
 
+
+
+
 class AVLTree {
 	private AVLNode root; 
 	
@@ -50,6 +53,8 @@ class AVLTree {
 			t = new AVLNode(x); 
 		} else if (x < t.data) {
 			t.left = insert(x,t.left);
+			
+			
 			if(height(t.left) - height(t.right) == 2) {
 				if(x < t.left.data) {
 					t = rotateWithLeftChild(t); 
@@ -57,6 +62,7 @@ class AVLTree {
 					t = doubleWithLeftChild(t); 
 				}
 			}
+			
 			
 		} else if (x > t.data) {
 			t.right = insert(x,t.right); 
@@ -184,8 +190,12 @@ public class AVLTreeTest {
 		Scanner scan = new Scanner(System.in); 
 		AVLTree avlt = new AVLTree(); 
 		
-		for(int i = 0; i < 100; i++) {
-			avlt.insert((int) (Math.random()*1000));
+		
+		int[] valores = new int[]{1,10,5};
+		
+		for(int i = 0; i < valores.length; i++) {
+			//avlt.insert((int) (Math.random()*1000));
+			avlt.insert(valores[i]);
 		}
 		char ch; 
 		
